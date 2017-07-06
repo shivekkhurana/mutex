@@ -1,4 +1,5 @@
-# mutex
+![Kmutex Logo](http://i.imgur.com/4dvJqcp.png)
+# kmutex
 ## A flux with no side effects
 
 React was a game changer. Flux was it's wingman. As a member of react community since its inception,
