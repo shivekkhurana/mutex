@@ -1,5 +1,5 @@
-![Kmutex Logo](http://i.imgur.com/4dvJqcp.png)
-# kmutex
+![mutex Logo](http://i.imgur.com/4dvJqcp.png)
+# mutex
 ## A flux with no side effects
 
 React was a game changer. Flux was it's wingman. As a member of react community since its inception,
@@ -17,4 +17,13 @@ This project is an attempt to solve the above issues. It :
 - Is extendable with middlewares
 - Cuts a load of boilerplate
 
-Stay tuned.
+## Idea
+- Assume a starting state of the app. 
+- Every action (taken by user or the app) causes a mutation to the state. 
+- All actions cause some mutations (otherwise, they are useless).
+- In redux, we dispatch an action with a type and hope that someone might listen to it.
+- In mutex, we tell explicity, the mutations, that need to run.
+
+## Implementation
+- Your app now need to have two extra folders : actions and mutations
+- All actions explicitly call required mutations
