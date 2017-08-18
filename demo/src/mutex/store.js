@@ -43,7 +43,6 @@ export default {
           }
         })
       ;
-
       return null;
     });
     return null;
