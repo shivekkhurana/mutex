@@ -1,6 +1,11 @@
-![mutex Logo](http://i.imgur.com/hJRc4E0.png)
-### Mutex (name not finalised yet)
-#### A flux with no side effects
+<p align="center"> 
+<img width="250" src="http://i.imgur.com/hJRc4E0.png" />
+</p>
+
+<p align="center"> 
+A flux with no side effects
+</p>
+
 
 **What is mutex ?**
 Mutex is an improved way of writing flux based apps. It draws inspiration from redux and favours the [ducks file structure](https://medium.com/@scbarrus/the-ducks-file-structure-for-redux-d63c41b7035c).
