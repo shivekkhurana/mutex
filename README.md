@@ -7,7 +7,9 @@ A flux with no side effects
 </p>
 
 
+
 **What is mutex ?**
+
 Mutex is an improved way of writing flux based apps. It draws inspiration from redux and favours the [ducks file structure](https://medium.com/@scbarrus/the-ducks-file-structure-for-redux-d63c41b7035c).
 
 Unlike traditional flux, mutex doesn't have a dispatcher or action constants. The best way to see how mutex is faster from existing flux solutions is to consider the following comparison :
@@ -18,65 +20,65 @@ We generally start with defining action type constants.
 // constants.js
 
 export default {
-	USER_LOGIN_SUCCESS: 'userLoginSuccess'
+  USER_LOGIN_SUCCESS: 'userLoginSuccess'
 };
 ```
-Then actions which are triggered by user or you (the developer).
+Then actions which are triggered by user interactions or you (the developer).
 ```js
 // actions/auth.js 
 
 import {USER_LOGIN_SUCCESS} from 'constants';
 
 export function login(username, password) {
-	return (dispatch) => {
-		api
-			.post('http://app.dev/auth/login', {username, password})
-			.then((res) => {
-				dispatch({
-					type: USER_LOGIN_SUCCESS,
-					user: res.user,
-					token: res.token
-				});
-			})
-			.catch((errors) => {
-				dispatch({
-					type: 'user.loginError', //maybe you use strings instead of constants (because they are more convenient)
-					errors
-				});
-			})
-		;
-	};
+  return (dispatch) => {
+    api
+      .post('http://app.dev/auth/login', {username, password})
+      .then((res) => {
+        dispatch({
+          type: USER_LOGIN_SUCCESS,
+          user: res.user,
+          token: res.token
+        });
+      })
+      .catch((errors) => {
+        dispatch({
+          type: 'user.loginError', //maybe you use strings instead of constants (because they are more convenient)
+          errors
+        });
+      })
+    ;
+  };
 }
 ```
 
 And finally have multiple stores listening for this action type :
 
 ```js
-// stores/user.js
+// stores/auth.js
 
 import {USER_LOGIN_SUCCESS} from 'constants';
 
 export default reducer(state={}, action) {
-	switch (action.type) {
-		case USER_LOGIN_SUCCESS:
-			return {...state, token: action.token}
-	}
-	return state;
+  switch (action.type) {
+    case USER_LOGIN_SUCCESS:
+      return {...state, token: action.token}
+  }
+  return state;
 }
 ```
 
 ```js
-// stores/auth.js
+// stores/user.js
 
 import {USER_LOGIN_SUCCESS} from 'constants';
 export default reducer(state={}, action) {
-	switch (action.type) {
-		case USER_LOGIN_SUCCESS:
-			return {...state, user: action.user}
-		case 'user.loginError':
-			return {...state, userLoginErrors: action.errors}
-	}
-	return state;
+  switch (action.type) {
+    case USER_LOGIN_SUCCESS:
+      return {...state, user: action.user}
+    case 'user.loginError':
+      return {...state, userLoginErrors: action.errors}
+  }
+  return state;
 }
 ```
 
@@ -91,23 +93,23 @@ import store from 'mutex/store';
 import authSuccess from 'modules/auth.js';
 
 export function userLoginSuccess(res, state) {
-	return {...state, user: res.user};
+  return {...state, user: res.user};
 }
 
 export function userLoginError(errors, state) {
-	return {...state, userLoginErrors: errors};
+  return {...state, userLoginErrors: errors};
 }
 
 export function login(username, password) {
-	api
-		.post('http://app.dev/auth/login', {username, password})
-		.then((res) => {
-			store.mutate(res, [userLoginSuccess, authSuccess])
-		})
-		.catch(errors => {
-			store.mutate(errors, [userLoginError]);
-		})
-	;
+  api
+    .post('http://app.dev/auth/login', {username, password})
+    .then((res) => {
+      store.mutate(res, [userLoginSuccess, authSuccess])
+    })
+    .catch(errors => {
+      store.mutate(errors, [userLoginError]);
+    })
+  ;
 }
 ```
 
@@ -115,18 +117,23 @@ export function login(username, password) {
 // modules/auth.js
 
 export function authSuccess(res, state) {
-	return {...state, token: res.token};
+  return {...state, token: res.token};
 }
 
 ```
 And that's it. 
 
+
+
 **How it works ?**
+
 Instead of dispatching a global action type to be received by all reducers, in mutex you explicitly define the mutations that have to be take place in response to an action. 
 
 In the above example, we explicitly defined that `authSuccess` and `userLoginSuccess` mutations have to run in the case of successful login.
 
 All mutations are pure functions and are injected with the global state object. The state is immutable here.
+
+
 
 
 **Why mutex ?**
@@ -137,28 +144,18 @@ All mutations are pure functions and are injected with the global state object. 
  - It reduces boiler plate. We don't have to specify action types and payloads.
  - It's faster because instead of calling all reducers when an action is dispatched, only relevant mutations are called.
  - It's easier to debug. Because of explicit declaration of mutations along with actions, you will always know which file to look at if anything goes wrong.
+ - All modules are imported dynamically, thus significantly reducing the size of intial script to be downloaded.
 
 Mutex can be seamlessly inserted in place of redux. Just replace the `react-redux`'s `connect` HOC with `mutex/connect` HOC.
 
 Also, did we tell you that instead of using React context and a provider, `mutex` uses it's own singleton `mutex/store`. This makes mocking and testing easier. Just user `mutex/mock-connect` instead of connect. More on this later.
 
+
 **Middlewares**
+
 TODO
 
-**Inspiration behind this project**
-React was a game changer. Flux was it's wingman. As a member of react community since its inception,
-it's hard to imagine writing apps without the easy state management that redux (flux, mobx and others) provide.
-
-But as all good things come marked with astericks *, redux too has its own problems :
-- Side effects (it's hard to keep actions pure)
-- Boilerplate
-- Event system bulking up the thread
-
-This project is an attempt to solve the above issues. It : 
-- Completely removes any dependence on dispatcher
-- Uses native promises to by pass side effects
-- Is extendable with middlewares
-- Cuts a load of boilerplate
 
 **Sound's interesting ? Got feedback ?**
+
 I'm trying to build this along with my work and would appreciate any help. You can always reach me at khuranashivek@outlook.com. 
